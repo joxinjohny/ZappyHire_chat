@@ -1,1 +1,111 @@
-<p>chat-bot works!</p>
+<div class="chatContainer">
+    <div class="content">
+        <div *ngFor = "let chat of chatSession">
+
+            <div *ngIf="chat.type == 'inc'; then incoming else outgoing"></div>
+            <ng-template #incoming>
+                <div class="messageContainer lAlign">
+                    <div class="message">
+                        <div class="dpContainer">
+                            <div class="dp"></div>
+                        </div>
+                        <div class="messageContent">
+                            <div class="bubble" *ngFor="let speech of chat.data.results.speechResponse; last as isLast;" [@msgAnim]>
+                                {{ speech }}
+                                <div class="inputListData" *ngIf="isLast">
+                                    <div class="candidateContainer" *ngFor = "let candidate of chat.data.results.input_list_data[0]">
+                                        <div class="candidate">
+                                            <div class="dp" [style.background-image]="sanitizeUrl(candidate.photo)"></div>
+                                            <div class="name">{{ candidate.name }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="optionList" *ngIf="chat.data.results.list_type == 'interviewers' && interviewers">
+                    <div class="item" *ngFor="let option of interviewers" [@msgAnim]>
+                        <div class="interviewer" [class]="option.selected ? 'selected' : ''" (click)="selectInterviewer(option.data.id)">
+                            <div class="dp">
+                                <div [style.background-image]="sanitizeUrl(option.data.photo)"></div>
+                            </div>
+                            <div class="name">{{ option.data.name }}</div>
+                            <div class="mail">mail@zappyhire.com</div>
+                            <div class="schedules">87 interviews scheduled</div>
+                            <div class="chooseStatus">
+                                <div>
+                                    <span></span>
+                                    <span>{{ option.selected ? 'Selected' : 'Choose' }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+    
+            <ng-template #outgoing>
+                <div class="messageContainer rAlign">
+                    <div class="message">
+                        <div class="messageContent">
+                            <div class="bubble" [@msgAnim]>{{ chat.data.message }}</div>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+        </div>        
+    </div>
+    <div class="action">
+        <div class="actionControlContainer" [ngSwitch] = "responseData && responseData.results && responseData.results.input_type">
+            <div *ngSwitchCase="'choice'" class="choiceContainer">
+                <div class="choiceButton" *ngFor = "let choice of responseData.results.quick_replies">
+                    <button class="zhButton" (click)="endChat()" (click) = "setAnswer('input', choice)">{{ choice.text }}</button>
+                </div>
+            </div>
+            <div *ngSwitchCase="'date'" [@msgAnim]>
+                <div class="controlContainer">
+                    <div class="control">
+                        <div class="zhDatePicker">
+                            <mat-datepicker #picker></mat-datepicker>
+                            <input type="text" name="" id="" placeholder="Choose a date" [matDatepickerFilter]="weekendFilter" (click)="picker.open()" [readonly]="true" [matDatepicker]="picker" class="zhText" #date>
+                            <span class="material-icons" (click)="picker.open()">today</span>
+                        </div>
+                    </div>
+                    <div class="send">
+                        <button mat-icon-button (click)="setAnswer('answer', date.value)">
+                            <mat-icon>send</mat-icon>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div *ngSwitchCase="'select_or_search'" [@msgAnim]>
+                <div class="controlContainer">
+                    <div class="control">
+                        <div class="zhDatePicker">
+                            <input type="text" name="" id="" placeholder="Search Interviewers..." class="zhText" #search>
+                            <span class="material-icons">search</span>
+                            <!-- <span class="material-icons" (click)="setAnswer('answer', search.value)">search</span> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div *ngSwitchCase="'text'" [@msgAnim]>
+                <div class="controlContainer">
+                    <div class="control">
+                        <div class="zhDatePicker">
+                            <input type="text" name="" id="" placeholder="Queries..." class="zhText" #text>
+                        </div>
+                    </div>
+                    <div class="send">
+                        <button mat-icon-button (click)="setAnswer('answer', text.value)">
+                            <mat-icon>send</mat-icon>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="endChatButtonContainer" [@msgAnim] *ngIf="responseData && responseData.results && responseData.results.state && responseData.results.state.prev_state === 'prompt_select_interviewers'">
+            <button class="zhButton" (click)="setAnswer('endChat', 'Okay, I\'m Done')">Okay, I'm Done</button>
+        </div>
+    </div>
+</div>

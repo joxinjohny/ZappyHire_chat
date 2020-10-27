@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  API: 'https://zhdev.zappyhire.com/idea/'
+  API_BASE: 'https://zhdev.zappyhire.com/idea/api/workflow/sample/'
 };

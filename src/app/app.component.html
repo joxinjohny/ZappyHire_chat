@@ -306,10 +306,9 @@
 </div>
 
 <div class="content" role="main">
-
-  <div (click)="endChat()">Close</div>
-  <div class="chatTrigger" [@chatSpace]="chatSpaceState" (click)="toggleChatBox()">
-    <span class="material-icons" *ngIf="chatSpaceState == 'close'">menu</span>
+  
+  <div class="chatTrigger" [@chatSpace]="chatSpaceState">
+    <span class="material-icons" *ngIf="chatSpaceState == 'close'" (click)="toggleChatBox()">menu</span>
     <ng-container *ngComponentOutlet="chatComponent"></ng-container>
   </div>
 
